@@ -74,4 +74,12 @@ class User extends Authenticatable
     {
         return $this->role === 'pelanggan';
     }
+
+    /**
+     * Get transactions for this user (kasir or customer)
+     */
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'user_id');
+    }
 }
