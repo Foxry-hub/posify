@@ -6,6 +6,7 @@
     <title>Dashboard Pelanggan - POSIFY</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-50">
     <!-- Navbar -->
@@ -16,8 +17,11 @@
                     <h1 class="text-2xl font-bold text-primary">POSIFY</h1>
                 </div>
                 <div class="hidden md:flex space-x-8">
-                    <a href="#" class="text-primary font-semibold">Dashboard</a>
-                    <a href="#" class="text-gray-700 hover:text-primary transition">Riwayat Belanja</a>
+                    <a href="{{ route('dashboard') }}" class="text-primary font-semibold">Dashboard</a>
+                    @if(Auth::user()->member)
+                        <a href="{{ route('pelanggan.member.index') }}" class="text-gray-700 hover:text-primary transition">Member</a>
+                    @endif
+                    <a href="{{ route('pelanggan.transactions.index') }}" class="text-gray-700 hover:text-primary transition">Riwayat Belanja</a>
                     <a href="#" class="text-gray-700 hover:text-primary transition">Profil</a>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -69,7 +73,7 @@
                     </div>
                 </div>
                 <h3 class="text-gray-600 text-sm font-medium">Total Belanja</h3>
-                <p class="text-2xl font-bold text-gray-900 mt-1">Rp 0</p>
+                <p class="text-2xl font-bold text-gray-900 mt-1">Rp {{ number_format($totalSpent ?? 0, 0, ',', '.') }}</p>
                 <p class="text-green-600 text-sm mt-2">Sepanjang waktu</p>
             </div>
 
@@ -83,7 +87,7 @@
                     </div>
                 </div>
                 <h3 class="text-gray-600 text-sm font-medium">Total Transaksi</h3>
-                <p class="text-2xl font-bold text-gray-900 mt-1">0</p>
+                <p class="text-2xl font-bold text-gray-900 mt-1">{{ $totalTransactions ?? 0 }}</p>
                 <p class="text-gray-500 text-sm mt-2">Pesanan selesai</p>
             </div>
 
@@ -95,10 +99,24 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
                         </svg>
                     </div>
+                    @if(Auth::user()->member)
+                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold">
+                            <i class="fas fa-check-circle"></i> Member
+                        </span>
+                    @else
+                        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-semibold">
+                            <i class="fas fa-lock"></i> Non-Member
+                        </span>
+                    @endif
                 </div>
                 <h3 class="text-gray-600 text-sm font-medium">Poin Reward</h3>
-                <p class="text-2xl font-bold text-gray-900 mt-1">0</p>
-                <p class="text-gray-500 text-sm mt-2">Poin tersedia</p>
+                @if(Auth::user()->member)
+                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ number_format(Auth::user()->member->total_points) }}</p>
+                    <p class="text-green-600 text-sm mt-2">Poin tersedia</p>
+                @else
+                    <p class="text-2xl font-bold text-gray-400 mt-1">0</p>
+                    <p class="text-gray-500 text-sm mt-2">Daftar member untuk dapat poin</p>
+                @endif
             </div>
         </div>
 
@@ -106,18 +124,39 @@
         <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
             <h3 class="text-xl font-bold text-gray-900 mb-6">Quick Actions</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <button class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 hover:shadow-lg transition transform hover:-translate-y-1">
-                    <svg class="w-10 h-10 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <p class="font-semibold text-sm">Cari Produk</p>
-                </button>
-                <button class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-6 hover:shadow-lg transition transform hover:-translate-y-1">
+                <!-- Member Card -->
+                @if(Auth::user()->member)
+                    <!-- Member Aktif -->
+                    <a href="{{ route('pelanggan.member.index') }}" class="bg-gradient-to-br from-yellow-500 to-orange-500 text-white rounded-xl p-6 hover:shadow-lg transition transform hover:-translate-y-1">
+                        <svg class="w-10 h-10 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <p class="font-semibold text-sm">Member</p>
+                        <p class="text-xs opacity-90 mt-1">{{ Auth::user()->member->total_points }} Poin</p>
+                    </a>
+                @else
+                    <!-- Belum Member (Terkunci) -->
+                    <div class="bg-gradient-to-br from-gray-400 to-gray-500 text-white rounded-xl p-6 relative cursor-not-allowed opacity-75">
+                        <!-- Lock Icon Overlay -->
+                        <div class="absolute top-2 right-2">
+                            <svg class="w-6 h-6 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <svg class="w-10 h-10 mx-auto mb-3 opacity-60" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <p class="font-semibold text-sm">Member</p>
+                        <p class="text-xs opacity-90 mt-1">Belum Terdaftar</p>
+                    </div>
+                @endif
+
+                <a href="{{ route('pelanggan.transactions.index') }}" class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-6 hover:shadow-lg transition transform hover:-translate-y-1">
                     <svg class="w-10 h-10 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
                     <p class="font-semibold text-sm">Riwayat</p>
-                </button>
+                </a>
                 <button class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-6 hover:shadow-lg transition transform hover:-translate-y-1">
                     <svg class="w-10 h-10 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -137,18 +176,48 @@
         <div class="bg-white rounded-2xl shadow-lg p-6">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-xl font-bold text-gray-900">Riwayat Transaksi Terakhir</h3>
-                <button class="text-primary hover:text-red-600 font-semibold text-sm">Lihat Semua</button>
+                <a href="{{ route('pelanggan.transactions.index') }}" class="text-primary hover:text-red-600 font-semibold text-sm">Lihat Semua</a>
             </div>
-            <div class="text-center py-16 text-gray-500">
-                <svg class="w-20 h-20 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                <p class="font-medium text-lg">Belum Ada Transaksi</p>
-                <p class="text-sm mt-2">Anda belum memiliki riwayat transaksi</p>
-                <button class="mt-6 bg-gradient-to-r from-primary to-red-600 text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition">
-                    Mulai Belanja
-                </button>
-            </div>
+            
+            @if(isset($recentTransactions) && $recentTransactions->count() > 0)
+                <div class="space-y-4">
+                    @foreach($recentTransactions as $transaction)
+                        <div class="border border-gray-200 rounded-xl p-4 hover:shadow-md transition">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-semibold text-gray-900">{{ $transaction->transaction_code }}</span>
+                                        <span class="text-sm text-gray-500">{{ $transaction->created_at->format('d M Y') }}</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-600 mb-2">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                        </svg>
+                                        {{ $transaction->items->count() }} item
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-lg font-bold text-green-600">Rp {{ number_format($transaction->total, 0, ',', '.') }}</span>
+                                        <a href="{{ route('pelanggan.transactions.show', $transaction) }}" class="text-primary hover:text-red-600 text-sm font-semibold">
+                                            Lihat Detail →
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-16 text-gray-500">
+                    <svg class="w-20 h-20 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <p class="font-medium text-lg">Belum Ada Transaksi</p>
+                    <p class="text-sm mt-2">Anda belum memiliki riwayat transaksi</p>
+                    <a href="{{ route('pelanggan.transactions.index') }}" class="inline-block mt-6 bg-gradient-to-r from-primary to-red-600 text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition">
+                        Lihat Riwayat Belanja
+                    </a>
+                </div>
+            @endif
         </div>
 
         <!-- Info Section -->
@@ -176,12 +245,29 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
                         </svg>
                     </div>
-                    <div>
-                        <h4 class="font-bold text-gray-900 mb-2">Program Reward</h4>
-                        <p class="text-sm text-gray-700">Kumpulkan poin setiap pembelian dan dapatkan diskon menarik!</p>
-                        <button class="mt-3 text-green-600 font-semibold text-sm hover:text-green-700">
-                            Pelajari Lebih Lanjut →
-                        </button>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-gray-900 mb-2">Program Reward Member</h4>
+                        @if(Auth::user()->member)
+                            <p class="text-sm text-gray-700">Kumpulkan poin setiap pembelian dan dapatkan diskon menarik!</p>
+                            <p class="text-sm text-green-700 font-semibold mt-2">✓ Anda sudah terdaftar sebagai member</p>
+                            <a href="{{ route('pelanggan.member.index') }}" class="mt-3 inline-block text-green-600 font-semibold text-sm hover:text-green-700">
+                                Lihat Member Dashboard →
+                            </a>
+                        @else
+                            <p class="text-sm text-gray-700 mb-2">Dapatkan poin setiap pembelian minimal Rp 10.000!</p>
+                            <div class="bg-white rounded-lg p-3 mt-3 border border-green-200">
+                                <p class="text-xs text-gray-600 mb-2"><strong>Keuntungan Member:</strong></p>
+                                <ul class="text-xs text-gray-700 space-y-1">
+                                    <li>✓ Dapat poin setiap belanja (Rp 10K = 1 poin)</li>
+                                    <li>✓ Tukar poin dengan voucher diskon</li>
+                                    <li>✓ Promo eksklusif member</li>
+                                </ul>
+                            </div>
+                            <div class="mt-3 text-sm">
+                                <p class="text-gray-600 mb-2"><i class="fas fa-info-circle text-blue-500"></i> <strong>Cara Daftar:</strong></p>
+                                <p class="text-gray-700">Hubungi kasir saat berbelanja untuk mendaftar sebagai member</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

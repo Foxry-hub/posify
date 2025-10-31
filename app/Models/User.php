@@ -82,4 +82,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaction::class, 'user_id');
     }
+
+    /**
+     * Get member data if user is a member
+     */
+    public function member()
+    {
+        return $this->hasOne(Member::class);
+    }
+
+    /**
+     * Check if user is a member
+     */
+    public function isMember(): bool
+    {
+        return $this->member()->exists() && $this->member->isActive();
+    }
 }

@@ -147,8 +147,83 @@
                     <div class="px-6 py-6 space-y-6">
                         <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
                             <p class="text-sm text-blue-800">
-                                <strong>📋 Instruksi:</strong> Pilih pelanggan terdaftar atau isi manual untuk pelanggan baru.
+                                <strong>📋 Instruksi:</strong> Scan member untuk mendapat poin, atau pilih pelanggan biasa.
                             </p>
+                        </div>
+
+                        <!-- Member Scan Section -->
+                        <div class="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-xl p-5">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-base font-bold text-gray-800 flex items-center">
+                                    <svg class="w-5 h-5 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                    </svg>
+                                    Scan Member (Dapat Poin!)
+                                </h3>
+                                <a href="{{ route('kasir.members.create') }}" target="_blank" 
+                                   class="text-xs px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
+                                    + Daftar Member Baru
+                                </a>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <div class="relative">
+                                    <input type="tel" 
+                                           id="memberPhone" 
+                                           placeholder="Masukkan nomor HP member (08xxx)"
+                                           class="w-full pl-10 pr-4 py-2.5 border-2 border-yellow-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition"
+                                           pattern="[0-9]{10,13}">
+                                    <svg class="w-5 h-5 text-yellow-600 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                </div>
+                                
+                                <button type="button" 
+                                        onclick="scanMember()"
+                                        class="w-full px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white rounded-lg font-semibold transition shadow-md">
+                                    <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                    Scan Member
+                                </button>
+
+                                <!-- Member Info Display -->
+                                <div id="memberInfo" class="hidden bg-white border-2 border-green-400 rounded-lg p-3">
+                                    <div class="flex items-start justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-xs text-gray-600 mb-1">Member Ditemukan:</p>
+                                            <p class="font-bold text-gray-800" id="memberName">-</p>
+                                            <p class="text-sm text-gray-600" id="memberCode">-</p>
+                                            <div class="mt-2 flex items-center space-x-4">
+                                                <div class="text-xs">
+                                                    <span class="text-gray-600">Poin Saat Ini:</span>
+                                                    <span class="font-bold text-green-600" id="memberPoints">0</span>
+                                                </div>
+                                                <div class="text-xs">
+                                                    <span class="text-gray-600">Poin Didapat:</span>
+                                                    <span class="font-bold text-blue-600" id="pointsWillEarn">0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" onclick="clearMember()" class="text-red-500 hover:text-red-700 ml-2">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Not Member Message -->
+                                <div id="notMemberMsg" class="hidden bg-red-50 border border-red-300 rounded-lg p-3">
+                                    <p class="text-sm text-red-700 mb-2" id="notMemberText">Nomor HP tidak terdaftar sebagai member.</p>
+                                    <button type="button" 
+                                            onclick="registerAsMember()"
+                                            id="upgradeBtn"
+                                            class="w-full px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition">
+                                        Daftarkan Sebagai Member
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Select Customer -->
@@ -236,6 +311,44 @@
                                     class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition text-base font-semibold">
                             </div>
                             <p class="text-xs text-gray-500 mt-1">Kosongkan jika tidak ada diskon</p>
+                        </div>
+
+                        <!-- Voucher Section -->
+                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-300 rounded-xl p-4">
+                            <label class="block text-sm font-bold text-purple-700 mb-2">
+                                <i class="fas fa-ticket-alt mr-1"></i> Gunakan Voucher Member (Opsional)
+                            </label>
+                            <div class="flex gap-2">
+                                <input type="text" id="voucherCode" placeholder="Masukkan kode voucher"
+                                    class="flex-1 px-4 py-3 border-2 border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition text-base uppercase">
+                                <button type="button" onclick="scanVoucher()"
+                                    class="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition font-semibold">
+                                    <i class="fas fa-search mr-1"></i> Cek
+                                </button>
+                            </div>
+                            
+                            <!-- Voucher Info (Hidden by default) -->
+                            <div id="voucherInfo" class="hidden mt-3 bg-white border-2 border-purple-300 rounded-lg p-3">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex-1">
+                                        <h6 class="font-bold text-purple-700" id="voucherName">-</h6>
+                                        <p class="text-sm text-gray-600 mt-1">
+                                            Diskon: <strong id="voucherDiscount">-</strong>
+                                        </p>
+                                        <p class="text-sm text-gray-600">
+                                            Min. Belanja: <strong id="voucherMinPurchase">-</strong>
+                                        </p>
+                                        <p class="text-xs text-gray-500 mt-1">
+                                            Pemilik: <span id="voucherOwner">-</span>
+                                        </p>
+                                    </div>
+                                    <button type="button" onclick="clearVoucher()" class="text-red-500 hover:text-red-700">
+                                        <i class="fas fa-times-circle fa-lg"></i>
+                                    </button>
+                                </div>
+                                <input type="hidden" id="voucherCodeHidden">
+                                <input type="hidden" id="voucherCustomerId">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -356,6 +469,184 @@
         let discount = 0;
         let total = 0;
         let currentStep = 1;
+        let memberData = null; // Store member data
+
+        // Member Scan Function
+        async function scanMember() {
+            const phone = document.getElementById('memberPhone').value.trim();
+            
+            if (!phone) {
+                alert('Masukkan nomor HP member!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`{{ route('kasir.members.search') }}?phone=${phone}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    // Member found
+                    memberData = data.member;
+                    document.getElementById('memberInfo').classList.remove('hidden');
+                    document.getElementById('notMemberMsg').classList.add('hidden');
+                    document.getElementById('memberName').textContent = data.member.name;
+                    document.getElementById('memberCode').textContent = `Kode: ${data.member.member_code}`;
+                    document.getElementById('memberPoints').textContent = data.member.total_points;
+                    
+                    // Auto fill customer data
+                    document.getElementById('selectCustomer').value = data.member.customer_id;
+                    document.getElementById('customerName').value = data.member.name;
+                    document.getElementById('customerPhone').value = data.member.phone;
+                    
+                    // Calculate points that will be earned
+                    updatePointsWillEarn();
+                    
+                } else if (data.is_customer) {
+                    // Customer exists but not member yet
+                    document.getElementById('memberInfo').classList.add('hidden');
+                    document.getElementById('notMemberMsg').classList.remove('hidden');
+                    document.getElementById('notMemberText').textContent = `${data.customer.name} belum menjadi member.`;
+                    document.getElementById('upgradeBtn').setAttribute('data-customer-id', data.customer.id);
+                    document.getElementById('upgradeBtn').setAttribute('data-customer-name', data.customer.name);
+                } else {
+                    // Not found at all
+                    document.getElementById('memberInfo').classList.add('hidden');
+                    document.getElementById('notMemberMsg').classList.remove('hidden');
+                    document.getElementById('notMemberText').textContent = 'Nomor HP tidak terdaftar. Silakan daftarkan sebagai member.';
+                    document.getElementById('upgradeBtn').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat mencari member');
+            }
+        }
+
+        // Clear Member
+        function clearMember() {
+            memberData = null;
+            document.getElementById('memberInfo').classList.add('hidden');
+            document.getElementById('memberPhone').value = '';
+            document.getElementById('pointsWillEarn').textContent = '0';
+        }
+
+        // Register as Member (upgrade existing customer)
+        async function registerAsMember() {
+            const customerId = document.getElementById('upgradeBtn').getAttribute('data-customer-id');
+            const customerName = document.getElementById('upgradeBtn').getAttribute('data-customer-name');
+            
+            if (!customerId) {
+                window.open('{{ route('kasir.members.create') }}', '_blank');
+                return;
+            }
+
+            if (!confirm(`Daftarkan ${customerName} sebagai member?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/kasir/members/${customerId}/upgrade`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                    // Reload member data
+                    memberData = data.member;
+                    document.getElementById('memberInfo').classList.remove('hidden');
+                    document.getElementById('notMemberMsg').classList.add('hidden');
+                    document.getElementById('memberName').textContent = data.member.name;
+                    document.getElementById('memberCode').textContent = `Kode: ${data.member.member_code}`;
+                    document.getElementById('memberPoints').textContent = data.member.total_points;
+                    document.getElementById('selectCustomer').value = data.member.customer_id;
+                    updatePointsWillEarn();
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat mendaftarkan member');
+            }
+        }
+
+        // Update points that will be earned based on total
+        function updatePointsWillEarn() {
+            if (memberData) {
+                const points = Math.floor(total / 10000); // 1 point per 10k
+                document.getElementById('pointsWillEarn').textContent = points;
+            }
+        }
+
+        // Voucher Scan Function
+        async function scanVoucher() {
+            const voucherCode = document.getElementById('voucherCode').value.trim().toUpperCase();
+            
+            if (!voucherCode) {
+                alert('Masukkan kode voucher!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`{{ route('kasir.vouchers.search') }}?voucher_code=${voucherCode}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const voucher = data.voucher;
+                    
+                    // Show voucher info
+                    document.getElementById('voucherInfo').classList.remove('hidden');
+                    document.getElementById('voucherName').textContent = voucher.name;
+                    
+                    // Format discount display
+                    let discountText = '';
+                    if (voucher.discount_type === 'percentage') {
+                        discountText = voucher.discount_value + '%';
+                    } else {
+                        discountText = 'Rp ' + new Intl.NumberFormat('id-ID').format(voucher.discount_value);
+                    }
+                    document.getElementById('voucherDiscount').textContent = discountText;
+                    
+                    // Format min purchase
+                    if (voucher.min_purchase > 0) {
+                        document.getElementById('voucherMinPurchase').textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(voucher.min_purchase);
+                    } else {
+                        document.getElementById('voucherMinPurchase').textContent = 'Tidak ada';
+                    }
+                    
+                    document.getElementById('voucherOwner').textContent = voucher.member_name + ' (' + voucher.member_phone + ')';
+                    document.getElementById('voucherCodeHidden').value = voucher.code;
+                    document.getElementById('voucherCustomerId').value = voucher.customer_id;
+                    
+                    // Auto select customer if not selected
+                    const currentCustomer = document.getElementById('selectCustomer').value;
+                    if (!currentCustomer || currentCustomer != voucher.customer_id) {
+                        alert('Voucher ini milik ' + voucher.member_name + '. Customer akan otomatis dipilih.');
+                        document.getElementById('selectCustomer').value = voucher.customer_id;
+                        fillCustomerData();
+                    }
+                    
+                } else {
+                    alert('❌ ' + data.message);
+                    clearVoucher();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat mencari voucher');
+            }
+        }
+
+        // Clear Voucher
+        function clearVoucher() {
+            document.getElementById('voucherInfo').classList.add('hidden');
+            document.getElementById('voucherCode').value = '';
+            document.getElementById('voucherCodeHidden').value = '';
+            document.getElementById('voucherCustomerId').value = '';
+        }
 
         // Fill customer data when selecting from dropdown
         function fillCustomerData() {
@@ -555,6 +846,9 @@
             document.getElementById('discountText').textContent = `- Rp ${discount.toLocaleString('id-ID')}`;
             document.getElementById('totalText').textContent = `Rp ${total.toLocaleString('id-ID')}`;
             
+            // Update points that will be earned for member
+            updatePointsWillEarn();
+            
             calculateChange();
         }
 
@@ -593,9 +887,14 @@
                 return;
             }
 
+            const customerId = document.getElementById('selectCustomer').value;
+            const voucherCode = document.getElementById('voucherCodeHidden').value || null;
+            
             const formData = {
+                customer_id: customerId || null,
                 customer_name: document.getElementById('customerName').value || 'Umum',
                 customer_phone: document.getElementById('customerPhone').value,
+                voucher_code: voucherCode,
                 payment_method: document.getElementById('paymentMethod').value,
                 paid_amount: paidAmount,
                 discount: discount,

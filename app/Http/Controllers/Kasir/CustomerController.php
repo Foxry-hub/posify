@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Kasir;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -66,8 +67,8 @@ class CustomerController extends Controller
             abort(404);
         }
 
-        $transactions = $customer->transactions()
-            ->with('items')
+        $transactions = Transaction::where('customer_id', $customer->id)
+            ->with(['user', 'items.product'])
             ->latest()
             ->paginate(10);
 

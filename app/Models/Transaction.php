@@ -10,6 +10,7 @@ class Transaction extends Model
     protected $fillable = [
         'transaction_code',
         'user_id',
+        'customer_id',
         'customer_name',
         'customer_phone',
         'subtotal',
@@ -51,6 +52,14 @@ class Transaction extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Relasi ke Customer (Pelanggan)
+     */
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'customer_id');
     }
 
     /**
