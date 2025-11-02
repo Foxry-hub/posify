@@ -62,6 +62,7 @@
                                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Gambar</th>
                                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Nama Produk</th>
                                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Kategori</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Barcode</th>
                                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Harga</th>
                                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Stock</th>
                                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Aksi</th>
@@ -93,6 +94,15 @@
                                                 {{ $product->category->name }}
                                             </span>
                                         </td>
+                                        <td class="px-6 py-4 text-sm">
+                                            @if($product->barcode)
+                                                <div class="bg-blue-50 border border-blue-200 rounded px-2 py-1 inline-block">
+                                                    <span class="font-mono text-xs font-semibold text-blue-700">📷 {{ $product->barcode }}</span>
+                                                </div>
+                                            @else
+                                                <span class="text-gray-400 text-xs">-</span>
+                                            @endif
+                                        </td>
                                         <td class="px-6 py-4 text-sm font-semibold text-gray-900">
                                             Rp {{ number_format($product->price, 0, ',', '.') }}
                                         </td>
@@ -118,7 +128,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                        <td colspan="8" class="px-6 py-8 text-center text-gray-500">
                                             <div class="text-4xl mb-2">📦</div>
                                             <p class="font-semibold">Belum ada produk</p>
                                             <p class="text-sm">Klik tombol "Tambah Produk" untuk menambah produk baru</p>

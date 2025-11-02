@@ -246,4 +246,42 @@ class TransactionController extends Controller
 
         return response()->json($products);
     }
+
+    /**
+     * Search product by barcode
+     */
+    public function searchByBarcode(Request $request)
+    {
+        $barcode = $request->get('barcode');
+        
+        if (!$barcode) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Barcode tidak boleh kosong'
+            ]);
+        }
+
+        $product = Product::where('barcode', $barcode)
+            ->where('stock', '>', 0)
+            ->first();
+
+        if ($product) {
+            return response()->json([
+                'success' => true,
+                'product' => [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'price' => $product->price,
+                    'stock' => $product->stock,
+                    'image' => $product->image,
+                    'barcode' => $product->barcode
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Produk dengan barcode tersebut tidak ditemukan atau stok habis'
+        ]);
+    }
 }

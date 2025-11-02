@@ -174,5 +174,42 @@ class MemberController extends Controller
             ],
         ]);
     }
+
+    /**
+     * Cari voucher member berdasarkan barcode
+     */
+    public function searchVoucherByBarcode(Request $request)
+    {
+        $barcode = $request->input('barcode');
+
+        $voucher = MemberVoucher::where('barcode', $barcode)
+            ->where('status', 'active')
+            ->where('expired_at', '>', now())
+            ->with('member.user')
+            ->first();
+
+        if (!$voucher) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Voucher tidak ditemukan atau sudah tidak aktif!',
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'voucher' => [
+                'code' => $voucher->voucher_code,
+                'name' => $voucher->voucher_name,
+                'type' => $voucher->voucher_type,
+                'discount_type' => $voucher->discount_type,
+                'discount_value' => $voucher->discount_value,
+                'min_purchase' => $voucher->min_purchase,
+                'expired_at' => $voucher->expired_at->format('d M Y'),
+                'member_name' => $voucher->member->user->name,
+                'member_phone' => $voucher->member->user->phone,
+                'customer_id' => $voucher->member->user_id,
+            ],
+        ]);
+    }
 }
 

@@ -10,6 +10,7 @@ class MemberVoucher extends Model
     protected $fillable = [
         'member_id',
         'voucher_code',
+        'barcode',
         'voucher_type',
         'voucher_name',
         'discount_type',
@@ -28,7 +29,7 @@ class MemberVoucher extends Model
     ];
 
     /**
-     * Boot method untuk generate voucher code otomatis
+     * Boot method untuk generate voucher code dan barcode otomatis
      */
     protected static function boot()
     {
@@ -37,6 +38,11 @@ class MemberVoucher extends Model
         static::creating(function ($voucher) {
             if (empty($voucher->voucher_code)) {
                 $voucher->voucher_code = 'VCR-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6));
+            }
+            
+            // Generate barcode (13 digit numeric untuk EAN-13)
+            if (empty($voucher->barcode)) {
+                $voucher->barcode = '20' . now()->format('ymd') . str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
             }
         });
     }

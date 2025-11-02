@@ -7,6 +7,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- JsBarcode for generating barcodes -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 </head>
 <body class="bg-light">
     <!-- Navbar -->
@@ -135,7 +137,7 @@
                         <div class="row g-3">
                             @foreach($activeVouchers as $voucher)
                                 <div class="col-md-6">
-                                    <div class="card border-primary">
+                                    <div class="card border-primary shadow">
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-start mb-2">
                                                 <div>
@@ -144,6 +146,21 @@
                                                 </div>
                                                 <span class="badge bg-success">Aktif</span>
                                             </div>
+                                            
+                                            <!-- Barcode Display -->
+                                            @if($voucher->barcode)
+                                            <div class="text-center bg-white border rounded p-3 my-3">
+                                                <svg class="barcode" 
+                                                    data-barcode="{{ $voucher->barcode }}"
+                                                    style="max-width: 100%; height: auto;">
+                                                </svg>
+                                                <p class="small text-muted mb-0 mt-1">{{ $voucher->barcode }}</p>
+                                                <p class="small text-primary mb-0">
+                                                    <i class="fas fa-barcode"></i> Scan barcode ini di kasir
+                                                </p>
+                                            </div>
+                                            @endif
+                                            
                                             <div class="border-top pt-2 mt-2">
                                                 <div class="d-flex justify-content-between text-sm">
                                                     <span class="text-muted">Diskon:</span>
@@ -165,9 +182,6 @@
                                                     <span class="text-muted">Berlaku s/d:</span>
                                                     <strong>{{ $voucher->expired_at->format('d M Y') }}</strong>
                                                 </div>
-                                            </div>
-                                            <div class="alert alert-info mt-2 mb-0 small">
-                                                <i class="fas fa-info-circle"></i> Tunjukkan kode ini ke kasir saat transaksi
                                             </div>
                                         </div>
                                     </div>
@@ -324,5 +338,24 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Generate Barcodes -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Generate all barcodes
+            document.querySelectorAll('.barcode').forEach(function(svg) {
+                const barcodeValue = svg.getAttribute('data-barcode');
+                if (barcodeValue) {
+                    JsBarcode(svg, barcodeValue, {
+                        format: "CODE128",
+                        width: 2,
+                        height: 60,
+                        displayValue: false,
+                        margin: 10
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>

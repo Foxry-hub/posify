@@ -59,6 +59,7 @@ Route::middleware(['auth', 'account.active', 'role:kasir,admin'])->prefix('kasir
     Route::get('/transactions/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
     Route::get('/transactions/{transaction}/print', [TransactionController::class, 'print'])->name('transactions.print');
     Route::get('/products/search', [TransactionController::class, 'searchProduct'])->name('products.search');
+    Route::get('/products/barcode', [TransactionController::class, 'searchByBarcode'])->name('products.searchByBarcode');
     
     // Customers
     Route::resource('customers', CustomerController::class);
@@ -70,6 +71,7 @@ Route::middleware(['auth', 'account.active', 'role:kasir,admin'])->prefix('kasir
     Route::get('/members/search', [MemberController::class, 'search'])->name('members.search');
     Route::post('/members/{user}/upgrade', [MemberController::class, 'upgrade'])->name('members.upgrade');
     Route::get('/vouchers/search', [MemberController::class, 'searchVoucher'])->name('vouchers.search');
+    Route::get('/vouchers/barcode', [MemberController::class, 'searchVoucherByBarcode'])->name('vouchers.searchByBarcode');
     
     // Reports
     Route::get('/reports', [KasirReportController::class, 'index'])->name('reports.index');

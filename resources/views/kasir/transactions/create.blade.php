@@ -6,6 +6,8 @@
     <title>Point of Sale - POSIFY</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- Html5-QRCode Library for Barcode Scanner -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         .product-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -66,12 +68,34 @@
 
             <!-- Search Bar -->
             <div class="bg-gradient-to-br from-gray-50 to-white px-6 py-4 border-b shadow-sm">
-                <div class="relative">
-                    <input type="text" id="productSearch" placeholder="Cari produk atau scan barcode..." 
-                        class="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition text-base shadow-sm">
-                    <svg class="w-6 h-6 text-gray-400 absolute left-4 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+                <div class="flex gap-2">
+                    <div class="relative flex-1">
+                        <input type="text" id="productSearch" placeholder="🔍 Scan barcode atau cari produk..." 
+                            class="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition text-base shadow-sm"
+                            autofocus disabled>
+                        <svg class="w-6 h-6 text-gray-400 absolute left-4 top-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <button type="button" id="scanCameraBtn" onclick="openProductBarcodeScanner()" disabled class="px-6 py-3.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-semibold transition shadow-md whitespace-nowrap disabled:bg-blue-300 disabled:cursor-not-allowed disabled:opacity-70">
+                        📷 Scan Kamera
+                    </button>
+                </div>
+                <!-- Barcode Result Indicator -->
+                <div id="barcodeSearchResult" class="mt-2 hidden">
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-2 flex items-center justify-between">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-sm font-semibold text-green-800" id="barcodeResultText">Produk ditemukan!</span>
+                        </div>
+                        <button type="button" onclick="clearBarcodeSearch()" class="text-green-600 hover:text-green-800">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -279,11 +303,11 @@
                                     <span class="font-semibold text-sm">Tunai</span>
                                 </button>
                                 <button type="button" onclick="qrisComingSoon()" 
-                                    class="payment-method-btn px-4 py-5 border-2 border-gray-400 bg-gray-100 rounded-xl cursor-not-allowed opacity-60 transition flex flex-col items-center justify-center space-y-2 relative" 
+                                    class="payment-method-btn px-4 py-5 border-2 border-gray-400 bg-gray-100 rounded-xl cursor-not-allowed opacity-75 transition flex flex-col items-center justify-center space-y-2 relative" 
                                     data-method="qris" disabled>
                                     <div class="relative flex items-center justify-center w-12 h-12">
-                                        <span class="text-3xl opacity-20">📱</span>
-                                        <i class="fas fa-lock absolute text-3xl text-gray-700"></i>
+                                        <span class="text-3xl opacity-40">📱</span>
+                                        <i class="fas fa-lock absolute text-3xl text-gray-600"></i>
                                     </div>
                                     <span class="font-semibold text-sm text-gray-600">QRIS</span>
                                     <span class="text-xs text-orange-600 font-bold">Coming Soon</span>
@@ -292,27 +316,18 @@
                             <input type="hidden" id="paymentMethod" value="cash">
                         </div>
 
-                        <!-- Discount -->
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-2">
-                                Diskon (Opsional)
-                            </label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-3.5 text-gray-500 font-semibold">Rp</span>
-                                <input type="number" id="discount" value="0" min="0" 
-                                    class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition text-base font-semibold">
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Kosongkan jika tidak ada diskon</p>
-                        </div>
-
                         <!-- Voucher Section -->
                         <div class="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-300 rounded-xl p-4">
                             <label class="block text-sm font-bold text-purple-700 mb-2">
                                 <i class="fas fa-ticket-alt mr-1"></i> Gunakan Voucher Member (Opsional)
                             </label>
                             <div class="flex gap-2">
-                                <input type="text" id="voucherCode" placeholder="Masukkan kode voucher"
+                                <input type="text" id="voucherCode" placeholder="Scan barcode atau ketik kode voucher"
                                     class="flex-1 px-4 py-3 border-2 border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition text-base uppercase">
+                                <button type="button" onclick="openVoucherBarcodeScanner()"
+                                    class="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition font-semibold whitespace-nowrap">
+                                    <i class="fas fa-camera mr-1"></i> Scan
+                                </button>
                                 <button type="button" onclick="scanVoucher()"
                                     class="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition font-semibold">
                                     <i class="fas fa-search mr-1"></i> Cek
@@ -411,10 +426,6 @@
                             <span class="text-gray-600 font-medium">Subtotal</span>
                             <span id="subtotalText" class="font-bold text-gray-900">Rp 0</span>
                         </div>
-                        <div class="flex justify-between text-sm" id="discountRow" style="display: none;">
-                            <span class="text-gray-600 font-medium">Diskon</span>
-                            <span id="discountText" class="font-bold text-red-600">- Rp 0</span>
-                        </div>
                         <div class="flex justify-between text-xl font-bold border-t-2 border-gray-300 pt-2">
                             <span class="text-gray-800">Total</span>
                             <span id="totalText" class="text-primary">Rp 0</span>
@@ -511,6 +522,92 @@
         </div>
     </div>
 
+    <!-- Camera Scanner Modal for Product Barcode -->
+    <div id="productScannerModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white">📷 Scan Barcode Produk</h3>
+                <button 
+                    type="button" 
+                    onclick="closeProductBarcodeScanner()" 
+                    class="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Scanner Container -->
+            <div class="p-6">
+                <div id="productReader" class="rounded-lg overflow-hidden border-4 border-blue-200"></div>
+                
+                <!-- Result Display -->
+                <div id="productScanResult" class="hidden mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
+                    <p class="text-sm text-green-700 font-semibold">
+                        ✅ Barcode terdeteksi: <span id="productResultText" class="font-mono"></span>
+                    </p>
+                </div>
+
+                <!-- Tips -->
+                <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p class="text-sm text-blue-700 font-semibold mb-2">💡 Tips Scanning:</p>
+                    <ul class="text-xs text-blue-600 space-y-1 list-disc list-inside">
+                        <li>Letakkan barcode horizontal dalam kotak scan</li>
+                        <li>Gunakan pencahayaan yang cukup terang</li>
+                        <li>Jaga jarak 10-20cm dari kamera</li>
+                        <li>Tahan stabil, tunggu beberapa detik</li>
+                        <li>Produk akan otomatis masuk ke keranjang</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Scanner Modal for Voucher Barcode -->
+    <div id="voucherScannerModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-4 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white">📷 Scan Barcode Voucher</h3>
+                <button 
+                    type="button" 
+                    onclick="closeVoucherBarcodeScanner()" 
+                    class="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Scanner Container -->
+            <div class="p-6">
+                <div id="voucherReader" class="rounded-lg overflow-hidden border-4 border-purple-200"></div>
+                
+                <!-- Result Display -->
+                <div id="voucherScanResult" class="hidden mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
+                    <p class="text-sm text-green-700 font-semibold">
+                        ✅ Barcode voucher terdeteksi: <span id="voucherResultText" class="font-mono"></span>
+                    </p>
+                </div>
+
+                <!-- Tips -->
+                <div class="mt-4 bg-purple-50 border border-purple-200 rounded-lg p-4">
+                    <p class="text-sm text-purple-700 font-semibold mb-2">💡 Tips Scanning:</p>
+                    <ul class="text-xs text-purple-600 space-y-1 list-disc list-inside">
+                        <li>Minta pelanggan menunjukkan barcode voucher</li>
+                        <li>Letakkan barcode horizontal dalam kotak scan</li>
+                        <li>Gunakan pencahayaan yang cukup terang</li>
+                        <li>Jaga jarak 10-20cm dari kamera</li>
+                        <li>Voucher akan otomatis terverifikasi</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let cart = [];
         let subtotal = 0;
@@ -518,7 +615,260 @@
         let total = 0;
         let currentStep = 1;
         let memberData = null; // Store member data
+        let html5QrCodeProduct = null; // Camera scanner instance
+        let isProcessingProduct = false; // Flag to prevent multiple scans
 
+        // ===== CAMERA BARCODE SCANNER FOR PRODUCTS =====
+        function openProductBarcodeScanner() {
+            // Check if customer info is filled (step 2)
+            if (currentStep !== 2) {
+                alert('Silakan isi informasi pelanggan terlebih dahulu di Langkah 1!');
+                return;
+            }
+            
+            const modal = document.getElementById('productScannerModal');
+            modal.classList.remove('hidden');
+            
+            // Reset processing flag
+            isProcessingProduct = false;
+            
+            // Initialize scanner
+            html5QrCodeProduct = new Html5Qrcode("productReader");
+            
+            // Configuration optimized for LINEAR BARCODES (garis-garis)
+            const config = {
+                fps: 10,
+                qrbox: { width: 400, height: 200 },  // Wider box for horizontal barcodes
+                aspectRatio: 2.0,  // Horizontal rectangle
+                // Explicitly support LINEAR barcode formats
+                formatsToSupport: [
+                    Html5QrcodeSupportedFormats.EAN_13,      // Most common product barcode
+                    Html5QrcodeSupportedFormats.EAN_8,
+                    Html5QrcodeSupportedFormats.UPC_A,
+                    Html5QrcodeSupportedFormats.UPC_E,
+                    Html5QrcodeSupportedFormats.CODE_128,
+                    Html5QrcodeSupportedFormats.CODE_39,
+                    Html5QrcodeSupportedFormats.CODE_93,
+                    Html5QrcodeSupportedFormats.ITF,
+                    Html5QrcodeSupportedFormats.CODABAR,
+                    Html5QrcodeSupportedFormats.QR_CODE
+                ],
+                // Enhanced scanning for barcodes
+                experimentalFeatures: {
+                    useBarCodeDetectorIfSupported: true
+                },
+                rememberLastUsedCamera: true,
+                showTorchButtonIfSupported: true
+            };
+            
+            html5QrCodeProduct.start(
+                { facingMode: "environment" }, // Use back camera if available
+                config,
+                (decodedText, decodedResult) => {
+                    // Prevent multiple processing
+                    if (isProcessingProduct) {
+                        return;
+                    }
+                    
+                    isProcessingProduct = true;
+                    
+                    // Success callback - barcode detected
+                    console.log(`Product barcode detected: ${decodedText}`, decodedResult);
+                    
+                    // Stop scanner immediately
+                    closeProductBarcodeScanner();
+                    
+                    // Show result
+                    document.getElementById('productResultText').textContent = decodedText;
+                    document.getElementById('productScanResult').classList.remove('hidden');
+                    
+                    // Play success sound
+                    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZSA0PVq3n77BdGAg+ltrzxnMpBSp+zO/bljsHEmK57OihUBELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+u');
+                    audio.play().catch(e => console.log('Audio play failed'));
+                    
+                    // Search product by barcode and add to cart
+                    searchProductByBarcode(decodedText);
+                },
+                (errorMessage) => {
+                    // Error callback - ignore, just keep scanning
+                }
+            ).catch((err) => {
+                console.error('Unable to start scanner:', err);
+                alert('Tidak dapat mengakses kamera. Pastikan izin kamera diberikan.');
+                closeProductBarcodeScanner();
+            });
+        }
+        
+        function closeProductBarcodeScanner() {
+            if (html5QrCodeProduct) {
+                html5QrCodeProduct.stop().then(() => {
+                    html5QrCodeProduct.clear();
+                    html5QrCodeProduct = null;
+                }).catch((err) => {
+                    console.error('Error stopping scanner:', err);
+                });
+            }
+
+            const modal = document.getElementById('productScannerModal');
+            modal.classList.add('hidden');
+
+            // Hide result
+            const resultDiv = document.getElementById('productScanResult');
+            resultDiv.classList.add('hidden');
+        }
+
+        // ===== CAMERA BARCODE SCANNER FOR VOUCHER =====
+        let html5QrCodeVoucher = null; // Voucher scanner instance
+        let isProcessingVoucher = false; // Flag to prevent multiple scans
+
+        function openVoucherBarcodeScanner() {
+            const modal = document.getElementById('voucherScannerModal');
+            modal.classList.remove('hidden');
+            
+            // Reset processing flag
+            isProcessingVoucher = false;
+            
+            // Initialize scanner
+            html5QrCodeVoucher = new Html5Qrcode("voucherReader");
+            
+            // Configuration optimized for LINEAR BARCODES
+            const config = {
+                fps: 10,
+                qrbox: { width: 400, height: 200 },
+                aspectRatio: 2.0,
+                formatsToSupport: [
+                    Html5QrcodeSupportedFormats.CODE_128,
+                    Html5QrcodeSupportedFormats.EAN_13,
+                    Html5QrcodeSupportedFormats.EAN_8,
+                    Html5QrcodeSupportedFormats.CODE_39,
+                    Html5QrcodeSupportedFormats.CODE_93,
+                    Html5QrcodeSupportedFormats.UPC_A,
+                    Html5QrcodeSupportedFormats.UPC_E,
+                    Html5QrcodeSupportedFormats.ITF,
+                    Html5QrcodeSupportedFormats.CODABAR,
+                    Html5QrcodeSupportedFormats.QR_CODE
+                ],
+                experimentalFeatures: {
+                    useBarCodeDetectorIfSupported: true
+                },
+                rememberLastUsedCamera: true,
+                showTorchButtonIfSupported: true
+            };
+            
+            html5QrCodeVoucher.start(
+                { facingMode: "environment" },
+                config,
+                (decodedText, decodedResult) => {
+                    // Prevent multiple processing
+                    if (isProcessingVoucher) {
+                        return;
+                    }
+                    
+                    isProcessingVoucher = true;
+                    
+                    // Success callback - barcode detected
+                    console.log(`Voucher barcode detected: ${decodedText}`, decodedResult);
+                    
+                    // Stop scanner immediately
+                    closeVoucherBarcodeScanner();
+                    
+                    // Show result
+                    document.getElementById('voucherResultText').textContent = decodedText;
+                    document.getElementById('voucherScanResult').classList.remove('hidden');
+                    
+                    // Fill voucher code input
+                    document.getElementById('voucherCode').value = decodedText;
+                    
+                    // Play success sound
+                    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZSA0PVq3n77BdGAg+ltrzxnMpBSp+zO/bljsHEmK57OihUBELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+u');
+                    audio.play().catch(e => console.log('Audio play failed'));
+                    
+                    // Search voucher by barcode
+                    searchVoucherByBarcode(decodedText);
+                },
+                (errorMessage) => {
+                    // Error callback - keep scanning
+                }
+            ).catch((err) => {
+                console.error('Unable to start voucher scanner:', err);
+                alert('Tidak dapat mengakses kamera. Pastikan izin kamera diberikan.');
+                closeVoucherBarcodeScanner();
+            });
+        }
+        
+        function closeVoucherBarcodeScanner() {
+            if (html5QrCodeVoucher) {
+                html5QrCodeVoucher.stop().then(() => {
+                    html5QrCodeVoucher.clear();
+                    html5QrCodeVoucher = null;
+                }).catch((err) => {
+                    console.error('Error stopping voucher scanner:', err);
+                });
+            }
+
+            const modal = document.getElementById('voucherScannerModal');
+            modal.classList.add('hidden');
+
+            // Hide result
+            const resultDiv = document.getElementById('voucherScanResult');
+            resultDiv.classList.add('hidden');
+        }
+
+        // Search voucher by barcode
+        async function searchVoucherByBarcode(barcode) {
+            try {
+                const response = await fetch(`{{ route('kasir.vouchers.searchByBarcode') }}?barcode=${barcode}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const voucher = data.voucher;
+                    
+                    // Show voucher info
+                    document.getElementById('voucherInfo').classList.remove('hidden');
+                    document.getElementById('voucherName').textContent = voucher.name;
+                    
+                    // Format discount display
+                    let discountText = '';
+                    if (voucher.discount_type === 'percentage') {
+                        discountText = voucher.discount_value + '%';
+                    } else {
+                        discountText = 'Rp ' + new Intl.NumberFormat('id-ID').format(voucher.discount_value);
+                    }
+                    document.getElementById('voucherDiscount').textContent = discountText;
+                    
+                    // Format min purchase
+                    if (voucher.min_purchase > 0) {
+                        document.getElementById('voucherMinPurchase').textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(voucher.min_purchase);
+                    } else {
+                        document.getElementById('voucherMinPurchase').textContent = 'Tidak ada';
+                    }
+                    
+                    document.getElementById('voucherOwner').textContent = voucher.member_name + ' (' + voucher.member_phone + ')';
+                    
+                    // IMPORTANT: Fill hidden fields for backend processing
+                    document.getElementById('voucherCodeHidden').value = voucher.code;
+                    document.getElementById('voucherCustomerId').value = voucher.customer_id;
+                    
+                    // Auto select customer if not selected
+                    const currentCustomer = document.getElementById('selectCustomer').value;
+                    if (!currentCustomer || currentCustomer != voucher.customer_id) {
+                        alert('Voucher ini milik ' + voucher.member_name + '. Customer akan otomatis dipilih.');
+                        document.getElementById('selectCustomer').value = voucher.customer_id;
+                        fillCustomerData();
+                    }
+                    
+                    alert('✅ Voucher berhasil ditemukan!\n\n' + voucher.name + '\nDiskon: ' + discountText);
+                } else {
+                    alert('❌ ' + data.message);
+                    clearVoucher();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat mencari voucher');
+            }
+        }
+
+        // ===== MEMBER AND OTHER FUNCTIONS =====
         // Member Scan Function
         async function scanMember() {
             const phone = document.getElementById('memberPhone').value.trim();
@@ -762,11 +1112,9 @@
                 document.getElementById('qrisPaymentSection').classList.add('hidden');
             }
             
-            // Show discount if exists
-            const discountValue = parseFloat(document.getElementById('discount').value) || 0;
-            if (discountValue > 0) {
-                document.getElementById('discountRow').style.display = 'flex';
-            }
+            // Enable product search and scan camera button
+            document.getElementById('productSearch').disabled = false;
+            document.getElementById('scanCameraBtn').disabled = false;
             
             // Switch panels
             document.getElementById('step1Panel').classList.add('hidden');
@@ -790,6 +1138,10 @@
                 document.getElementById('qrGenerateSection').classList.remove('hidden');
                 document.getElementById('qrCodeContainer').innerHTML = '';
             }
+            
+            // Disable product search and scan camera button
+            document.getElementById('productSearch').disabled = true;
+            document.getElementById('scanCameraBtn').disabled = true;
             
             document.getElementById('step2Panel').classList.add('hidden');
             document.getElementById('step2Panel').classList.remove('flex');
@@ -909,11 +1261,10 @@
 
         function calculateTotal() {
             subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            discount = parseFloat(document.getElementById('discount').value) || 0;
+            discount = 0; // Diskon manual dihapus, hanya dari voucher
             total = subtotal - discount;
 
             document.getElementById('subtotalText').textContent = `Rp ${subtotal.toLocaleString('id-ID')}`;
-            document.getElementById('discountText').textContent = `- Rp ${discount.toLocaleString('id-ID')}`;
             document.getElementById('totalText').textContent = `Rp ${total.toLocaleString('id-ID')}`;
             
             // Update points that will be earned for member
@@ -1027,18 +1378,108 @@
 
         // Product search
         document.getElementById('productSearch').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
+            const searchTerm = e.target.value.toLowerCase().trim();
             const products = document.querySelectorAll('.product-card');
             
-            products.forEach(product => {
-                const productName = product.querySelector('h3').textContent.toLowerCase();
-                if (productName.includes(searchTerm)) {
-                    product.style.display = 'block';
-                } else {
-                    product.style.display = 'none';
-                }
-            });
+            // Check if search term looks like barcode (number only, length > 8)
+            const isBarcode = /^\d{8,}$/.test(searchTerm);
+            
+            if (isBarcode && searchTerm.length >= 8) {
+                // Search by barcode
+                searchProductByBarcode(searchTerm);
+            } else {
+                // Normal search by name
+                products.forEach(product => {
+                    const productName = product.querySelector('h3').textContent.toLowerCase();
+                    if (productName.includes(searchTerm)) {
+                        product.style.display = 'block';
+                    } else {
+                        product.style.display = 'none';
+                    }
+                });
+            }
         });
+
+        // Focus barcode search input
+        function focusBarcodeSearch() {
+            console.log('focusBarcodeSearch() called');
+            const searchInput = document.getElementById('productSearch');
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.focus();
+                clearBarcodeSearch();
+                console.log('Search input focused and cleared');
+            } else {
+                console.error('Search input not found');
+            }
+        }
+
+        // Clear barcode search result
+        function clearBarcodeSearch() {
+            const resultDiv = document.getElementById('barcodeSearchResult');
+            if (resultDiv) {
+                resultDiv.classList.add('hidden');
+            }
+            const searchInput = document.getElementById('productSearch');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+        }
+
+        // Search product by barcode
+        async function searchProductByBarcode(barcode) {
+            try {
+                const response = await fetch(`{{ route('kasir.products.searchByBarcode') }}?barcode=${barcode}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const product = data.product;
+                    
+                    // Show success indicator
+                    document.getElementById('barcodeSearchResult').classList.remove('hidden');
+                    document.getElementById('barcodeResultText').textContent = `✅ ${product.name} (Rp ${product.price.toLocaleString('id-ID')})`;
+                    
+                    // Check if user is in step 2
+                    if (currentStep !== 2) {
+                        // Auto go to step 2 if needed
+                        if (confirm(`Produk "${product.name}" ditemukan!\n\nLanjut ke pemilihan produk?`)) {
+                            // Fill minimal customer data
+                            if (!document.getElementById('customerName').value || document.getElementById('customerName').value === '') {
+                                document.getElementById('customerName').value = 'Umum';
+                            }
+                            goToStep2();
+                        }
+                    }
+                    
+                    // Add to cart automatically
+                    setTimeout(() => {
+                        addToCart(product);
+                        
+                        // Play success sound (optional)
+                        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZSA0PVq3n77BdGAg+ltrzxnMpBSp+zO/bljsHEmK57OihUBELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+ujUhELTKXh8bllHAU2jdXzzn0vBSF1xe7hlEILElyx6+u');
+                        audio.play().catch(e => console.log('Audio play failed:', e));
+                        
+                        // Clear search after 2 seconds
+                        setTimeout(() => {
+                            clearBarcodeSearch();
+                        }, 2000);
+                    }, 300);
+                    
+                } else {
+                    // Product not found
+                    document.getElementById('barcodeSearchResult').classList.remove('hidden');
+                    document.getElementById('barcodeResultText').textContent = `❌ Barcode tidak ditemukan`;
+                    document.getElementById('barcodeSearchResult').querySelector('.bg-green-50').className = 'bg-red-50 border border-red-200 rounded-lg p-2 flex items-center justify-between';
+                    
+                    setTimeout(() => {
+                        clearBarcodeSearch();
+                    }, 3000);
+                }
+            } catch (error) {
+                console.error('Error searching barcode:', error);
+                alert('Terjadi kesalahan saat mencari produk');
+            }
+        }
 
         // Quick pay buttons
         document.getElementById('totalText').addEventListener('click', function() {
@@ -1115,6 +1556,24 @@
         function formatRupiah(amount) {
             return new Intl.NumberFormat('id-ID').format(amount);
         }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Kasir page loaded');
+            
+            // Add click event listener to scan button
+            const scanButtons = document.querySelectorAll('button[onclick*="focusBarcodeSearch"]');
+            console.log('Found scan buttons:', scanButtons.length);
+            
+            scanButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Scan button clicked via addEventListener');
+                    focusBarcodeSearch();
+                });
+            });
+        });
     </script>
     
     <!-- QRCode.js Library for QR Code Generation -->
