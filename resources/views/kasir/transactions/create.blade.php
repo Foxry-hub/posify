@@ -273,28 +273,20 @@
                             </label>
                             <div class="grid grid-cols-2 gap-3">
                                 <button type="button" onclick="selectPaymentMethod('cash')" 
-                                    class="payment-method-btn active px-4 py-5 border-2 border-primary bg-primary/10 rounded-xl hover:bg-primary/20 transition flex flex-col items-center space-y-2" 
+                                    class="payment-method-btn active px-4 py-5 border-2 border-primary bg-primary/10 rounded-xl hover:bg-primary/20 transition flex flex-col items-center justify-center space-y-2" 
                                     data-method="cash">
                                     <span class="text-3xl">💵</span>
                                     <span class="font-semibold text-sm">Tunai</span>
                                 </button>
-                                <button type="button" onclick="selectPaymentMethod('debit')" 
-                                    class="payment-method-btn px-4 py-5 border-2 border-gray-300 rounded-xl hover:border-primary hover:bg-primary/10 transition flex flex-col items-center space-y-2" 
-                                    data-method="debit">
-                                    <span class="text-3xl">💳</span>
-                                    <span class="font-semibold text-sm">Debit</span>
-                                </button>
-                                <button type="button" onclick="selectPaymentMethod('credit')" 
-                                    class="payment-method-btn px-4 py-5 border-2 border-gray-300 rounded-xl hover:border-primary hover:bg-primary/10 transition flex flex-col items-center space-y-2" 
-                                    data-method="credit">
-                                    <span class="text-3xl">💳</span>
-                                    <span class="font-semibold text-sm">Credit</span>
-                                </button>
-                                <button type="button" onclick="selectPaymentMethod('qris')" 
-                                    class="payment-method-btn px-4 py-5 border-2 border-gray-300 rounded-xl hover:border-primary hover:bg-primary/10 transition flex flex-col items-center space-y-2" 
-                                    data-method="qris">
-                                    <span class="text-3xl">📱</span>
-                                    <span class="font-semibold text-sm">QRIS</span>
+                                <button type="button" onclick="qrisComingSoon()" 
+                                    class="payment-method-btn px-4 py-5 border-2 border-gray-400 bg-gray-100 rounded-xl cursor-not-allowed opacity-60 transition flex flex-col items-center justify-center space-y-2 relative" 
+                                    data-method="qris" disabled>
+                                    <div class="relative flex items-center justify-center w-12 h-12">
+                                        <span class="text-3xl opacity-20">📱</span>
+                                        <i class="fas fa-lock absolute text-3xl text-gray-700"></i>
+                                    </div>
+                                    <span class="font-semibold text-sm text-gray-600">QRIS</span>
+                                    <span class="text-xs text-orange-600 font-bold">Coming Soon</span>
                                 </button>
                             </div>
                             <input type="hidden" id="paymentMethod" value="cash">
@@ -429,14 +421,70 @@
                         </div>
                     </div>
 
-                    <!-- Payment Input -->
-                    <div>
+                    <!-- Payment Input (Cash) -->
+                    <div id="cashPaymentSection">
                         <label class="block text-sm font-bold text-gray-700 mb-2">Jumlah Bayar</label>
                         <div class="relative">
                             <span class="absolute left-4 top-3.5 text-gray-500 font-semibold">Rp</span>
                             <input type="number" id="paidAmount" value="0" min="0" 
                                 class="w-full pl-12 pr-4 py-3 border-2 border-primary rounded-xl focus:ring-2 focus:ring-primary text-lg font-bold text-center" 
                                 oninput="calculateChange()">
+                        </div>
+                    </div>
+
+                    <!-- QRIS Payment Section (Hidden by default) -->
+                    <div id="qrisPaymentSection" class="hidden">
+                        <!-- Generate QR Section -->
+                        <div id="qrGenerateSection">
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-300 rounded-xl p-4 mb-3">
+                                <p class="text-sm text-gray-700 mb-2">
+                                    <i class="fas fa-info-circle text-blue-600 mr-1"></i>
+                                    <strong>Instruksi QRIS:</strong>
+                                </p>
+                                <ol class="text-sm text-gray-600 ml-5 list-decimal space-y-1">
+                                    <li>Klik tombol "Generate QR Code"</li>
+                                    <li>Tunjukkan QR ke pelanggan</li>
+                                    <li>Pelanggan scan dengan GoPay/OVO/Dana/etc</li>
+                                    <li>Tunggu & konfirmasi pembayaran berhasil</li>
+                                </ol>
+                            </div>
+                            
+                            <button type="button" onclick="generateQRIS()" 
+                                class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl transition font-bold shadow-lg">
+                                <i class="fas fa-qrcode mr-2"></i> Generate QR Code
+                            </button>
+                        </div>
+                        
+                        <!-- QR Display Section (Hidden until generated) -->
+                        <div id="qrDisplaySection" class="hidden">
+                            <div class="bg-white rounded-lg p-4 mb-3 text-center border-2 border-blue-300">
+                                <p class="text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="fas fa-mobile-alt mr-1"></i> Scan QR Code di bawah:
+                                </p>
+                                <div id="qrCodeContainer" class="flex justify-center mb-3"></div>
+                                <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                                    <p class="text-xs text-gray-600 mb-1">Total Pembayaran:</p>
+                                    <p class="text-2xl font-bold text-blue-700" id="qrAmountDisplay">Rp 0</p>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-3 mb-3">
+                                <p class="text-sm text-yellow-800 text-center font-semibold">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    Menunggu pembayaran dari pelanggan...
+                                </p>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="confirmQRISPayment()" 
+                                    class="px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition font-semibold">
+                                    <i class="fas fa-check mr-1"></i> Sudah Bayar
+                                </button>
+                                <button type="button" onclick="cancelQRIS()" 
+                                    class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-semibold">
+                                    <i class="fas fa-times mr-1"></i> Batal
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -677,6 +725,14 @@
             selectedBtn.classList.remove('border-gray-300');
             
             document.getElementById('paymentMethod').value = method;
+            
+            // Don't show QRIS payment section in step 1
+            // It will be shown in step 2
+        }
+
+        // QRIS Coming Soon notification
+        function qrisComingSoon() {
+            alert('🔒 Metode pembayaran QRIS sedang dalam pengembangan.\n\n📅 Coming Soon!\n\nSilakan gunakan metode pembayaran Tunai terlebih dahulu.');
         }
 
         // Go to step 2
@@ -693,11 +749,18 @@
             const paymentMethod = document.getElementById('paymentMethod').value;
             const paymentLabels = {
                 'cash': '💵 Tunai',
-                'debit': '💳 Debit Card',
-                'credit': '💳 Credit Card',
                 'qris': '📱 QRIS'
             };
             document.getElementById('paymentMethodDisplay').textContent = paymentLabels[paymentMethod];
+            
+            // Show appropriate payment section based on method
+            if (paymentMethod === 'qris') {
+                document.getElementById('cashPaymentSection').classList.add('hidden');
+                document.getElementById('qrisPaymentSection').classList.remove('hidden');
+            } else {
+                document.getElementById('cashPaymentSection').classList.remove('hidden');
+                document.getElementById('qrisPaymentSection').classList.add('hidden');
+            }
             
             // Show discount if exists
             const discountValue = parseFloat(document.getElementById('discount').value) || 0;
@@ -719,6 +782,13 @@
                     return;
                 }
                 cart = [];
+            }
+            
+            // Reset QRIS section if active
+            if (document.getElementById('paymentMethod').value === 'qris') {
+                document.getElementById('qrDisplaySection').classList.add('hidden');
+                document.getElementById('qrGenerateSection').classList.remove('hidden');
+                document.getElementById('qrCodeContainer').innerHTML = '';
             }
             
             document.getElementById('step2Panel').classList.add('hidden');
@@ -872,6 +942,13 @@
                 renderCart();
                 calculateTotal();
                 document.getElementById('paidAmount').value = '0';
+                
+                // Reset QRIS section if active
+                if (document.getElementById('paymentMethod').value === 'qris') {
+                    document.getElementById('qrDisplaySection').classList.add('hidden');
+                    document.getElementById('qrGenerateSection').classList.remove('hidden');
+                    document.getElementById('qrCodeContainer').innerHTML = '';
+                }
             }
         }
 
@@ -970,6 +1047,77 @@
             document.getElementById('paidAmount').value = rounded;
             calculateChange();
         });
+
+        // ========== QRIS PAYMENT FUNCTIONS ==========
+        
+        function generateQRIS() {
+            if (total === 0) {
+                alert('Total transaksi masih Rp 0. Silakan tambahkan produk terlebih dahulu.');
+                return;
+            }
+            
+            // Hide generate section, show display section
+            document.getElementById('qrGenerateSection').classList.add('hidden');
+            document.getElementById('qrDisplaySection').classList.remove('hidden');
+            
+            // Update amount display
+            document.getElementById('qrAmountDisplay').textContent = 'Rp ' + formatRupiah(total);
+            
+            // Generate QR Code
+            const qrContainer = document.getElementById('qrCodeContainer');
+            qrContainer.innerHTML = ''; // Clear previous QR
+            
+            // Create QRIS data string
+            // Format: MERCHANT_NAME|AMOUNT|TRANSACTION_ID
+            const transactionId = 'TRX' + Date.now();
+            const merchantName = 'VALSTORE POS';
+            const qrisData = `${merchantName}|${total}|${transactionId}`;
+            
+            // Generate QR Code using QRCode.js
+            new QRCode(qrContainer, {
+                text: qrisData,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // Auto-fill payment amount
+            document.getElementById('paidAmount').value = total;
+            calculateChange();
+        }
+        
+        function confirmQRISPayment() {
+            if (confirm('Apakah pelanggan sudah melakukan pembayaran via QRIS?')) {
+                // Payment confirmed, ready to process transaction
+                alert('✓ Pembayaran QRIS dikonfirmasi!');
+                // Enable pay button
+                document.getElementById('payButton').disabled = false;
+            }
+        }
+        
+        function cancelQRIS() {
+            if (confirm('Batalkan pembayaran QRIS?')) {
+                // Reset to generate section
+                document.getElementById('qrDisplaySection').classList.add('hidden');
+                document.getElementById('qrGenerateSection').classList.remove('hidden');
+                
+                // Clear QR code
+                document.getElementById('qrCodeContainer').innerHTML = '';
+                
+                // Reset payment amount
+                document.getElementById('paidAmount').value = 0;
+                calculateChange();
+            }
+        }
+        
+        function formatRupiah(amount) {
+            return new Intl.NumberFormat('id-ID').format(amount);
+        }
     </script>
+    
+    <!-- QRCode.js Library for QR Code Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </body>
 </html>
