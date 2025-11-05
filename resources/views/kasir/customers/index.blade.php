@@ -6,47 +6,46 @@
     <title>Daftar Pelanggan - POSIFY</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-100">
-<div class="min-h-screen">
-    <!-- Header -->
-    <header class="bg-white shadow">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <a href="{{ route('dashboard') }}" class="text-primary hover:text-blue-700 font-semibold flex items-center mb-2">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        Kembali ke Dashboard
-                    </a>
-                    <h1 class="text-3xl font-bold text-gray-900">Daftar Pelanggan</h1>
-                    <p class="text-sm text-gray-600 mt-1">Kelola data pelanggan terdaftar</p>
-                </div>
-                <a href="{{ route('kasir.customers.create') }}" class="px-6 py-3 bg-primary hover:bg-blue-600 text-white rounded-lg font-semibold transition shadow-md hover:shadow-lg flex items-center space-x-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    <span>Tambah Pelanggan</span>
-                </a>
-            </div>
-        </div>
-    </header>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    @include('layouts.partials.sidebar')
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Main Content -->
+    <div class="flex-1 overflow-y-auto">
+        <!-- Header -->
+        <header class="bg-white shadow-sm">
+            <div class="px-6 md:px-8 py-4 md:py-6">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Daftar Pelanggan</h1>
+                        <p class="text-sm text-gray-600 mt-1">Kelola data pelanggan terdaftar</p>
+                    </div>
+                    <a href="{{ route('kasir.customers.create') }}" class="bg-gradient-to-br from-primary to-red-600 text-white px-6 py-3 rounded-lg font-semibold transition hover:shadow-lg inline-flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Tambah Pelanggan
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main class="p-6 md:p-8 max-w-7xl mx-auto">
         @if(session('success'))
-            <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-r-lg">
+            <div class="bg-green-100 border-l-4 border-green-500 p-4 mb-6 rounded-lg shadow">
                 <div class="flex items-center">
                     <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    <p class="text-green-800 font-medium">{{ session('success') }}</p>
+                    <p class="text-green-800 font-semibold">{{ session('success') }}</p>
                 </div>
             </div>
         @endif
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600 font-medium">Total Pelanggan</p>
@@ -60,7 +59,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-md p-6">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600 font-medium">Pelanggan Aktif</p>
@@ -74,7 +73,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-md p-6">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600 font-medium">Registrasi Bulan Ini</p>
@@ -90,7 +89,7 @@
         </div>
 
         <!-- Customer Table -->
-        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-lg font-bold text-gray-900">Data Pelanggan</h2>
             </div>
@@ -141,17 +140,17 @@
                                     {{ $customer->created_at->format('d M Y') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <div class="flex items-center justify-end space-x-2">
-                                        <a href="{{ route('kasir.customers.show', $customer) }}" class="text-blue-600 hover:text-blue-900 font-semibold">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a href="{{ route('kasir.customers.show', $customer) }}" class="bg-gradient-to-br from-green-500 to-green-600 text-white px-4 py-2 rounded-lg hover:shadow-md transition font-semibold">
                                             Detail
                                         </a>
-                                        <a href="{{ route('kasir.customers.edit', $customer) }}" class="text-yellow-600 hover:text-yellow-900 font-semibold">
+                                        <a href="{{ route('kasir.customers.edit', $customer) }}" class="bg-gradient-to-br from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:shadow-md transition font-semibold">
                                             Edit
                                         </a>
                                         <form action="{{ route('kasir.customers.destroy', $customer) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pelanggan ini?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900 font-semibold">
+                                            <button type="submit" class="bg-gradient-to-br from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:shadow-md transition font-semibold">
                                                 Hapus
                                             </button>
                                         </form>
@@ -183,6 +182,7 @@
             @endif
         </div>
     </main>
+    </div>
 </div>
 </body>
 </html>

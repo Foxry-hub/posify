@@ -26,34 +26,37 @@
             </header>
 
             <!-- Content -->
-            <div class="p-8">
+            <div class="p-6 md:p-8 max-w-7xl mx-auto">
                 <!-- Alert Messages -->
                 @if(session('success'))
-                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded">
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-lg shadow">
                         <p class="font-semibold">✓ Berhasil!</p>
                         <p>{{ session('success') }}</p>
                     </div>
                 @endif
 
                 @if(session('error'))
-                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg shadow">
                         <p class="font-semibold">✗ Error!</p>
                         <p>{{ session('error') }}</p>
                     </div>
                 @endif
 
                 <!-- Action Bar -->
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                     <div>
-                        <p class="text-gray-600">Total: <span class="font-bold">{{ $categories->total() }}</span> kategori</p>
+                        <p class="text-gray-600">Total: <span class="font-bold text-gray-900">{{ $categories->total() }}</span> kategori</p>
                     </div>
-                    <a href="{{ route('admin.categories.create') }}" class="bg-primary text-white px-6 py-2.5 rounded-lg hover:bg-red-600 transition font-semibold">
-                        + Tambah Kategori
+                    <a href="{{ route('admin.categories.create') }}" class="bg-gradient-to-br from-primary to-red-600 text-white px-6 py-3 rounded-lg hover:shadow-lg transition font-semibold inline-flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Tambah Kategori
                     </a>
                 </div>
 
                 <!-- Table -->
-                <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                     <table class="min-w-full">
                         <thead class="bg-gray-50 border-b">
                             <tr>
@@ -90,13 +93,13 @@
                                     </td>
                                     <td class="px-6 py-4 text-sm">
                                         <div class="flex gap-2">
-                                            <a href="{{ route('admin.categories.edit', $category) }}" class="bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded hover:bg-yellow-200 transition font-semibold">
+                                            <a href="{{ route('admin.categories.edit', $category) }}" class="bg-gradient-to-br from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:shadow-md transition font-semibold">
                                                 Edit
                                             </a>
                                             <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="bg-red-100 text-red-700 px-3 py-1.5 rounded hover:bg-red-200 transition font-semibold">
+                                                <button type="submit" class="bg-gradient-to-br from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:shadow-md transition font-semibold">
                                                     Hapus
                                                 </button>
                                             </form>

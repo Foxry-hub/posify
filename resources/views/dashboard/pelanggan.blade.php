@@ -22,7 +22,6 @@
                         <a href="{{ route('pelanggan.member.index') }}" class="text-gray-700 hover:text-primary transition">Member</a>
                     @endif
                     <a href="{{ route('pelanggan.transactions.index') }}" class="text-gray-700 hover:text-primary transition">Riwayat Belanja</a>
-                    <a href="#" class="text-gray-700 hover:text-primary transition">Profil</a>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="flex items-center space-x-2 bg-gray-100 rounded-full px-4 py-2">
@@ -45,16 +44,16 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         <!-- Welcome Section -->
-        <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-3xl p-8 text-white mb-8 shadow-lg">
+        <div class="bg-gradient-to-br from-primary to-red-600 rounded-2xl md:rounded-3xl p-6 md:p-8 text-white mb-6 md:mb-8 shadow-lg">
             <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="text-3xl font-bold mb-2">Selamat Datang, {{ Auth::user()->name }}!</h2>
-                    <p class="text-green-100">Nikmati pengalaman berbelanja yang mudah dan nyaman</p>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">Selamat Datang, {{ Auth::user()->name }}!</h2>
+                    <p class="text-red-100">Nikmati pengalaman berbelanja yang mudah dan nyaman</p>
                 </div>
                 <div class="hidden md:block">
-                    <svg class="w-24 h-24 opacity-20" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-20 h-20 md:w-24 md:h-24 opacity-20" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
                     </svg>
                 </div>
@@ -62,18 +61,18 @@
         </div>
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
             <!-- Total Belanja -->
             <div class="bg-white rounded-2xl p-6 shadow-lg">
                 <div class="flex items-center justify-between mb-4">
                     <div class="bg-blue-100 p-3 rounded-xl">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                     </div>
                 </div>
                 <h3 class="text-gray-600 text-sm font-medium">Total Belanja</h3>
-                <p class="text-2xl font-bold text-gray-900 mt-1">Rp {{ number_format($totalSpent ?? 0, 0, ',', '.') }}</p>
+                <p class="text-2xl md:text-3xl font-bold text-gray-900 mt-1">Rp {{ number_format($totalSpent ?? 0, 0, ',', '.') }}</p>
                 <p class="text-green-600 text-sm mt-2">Sepanjang waktu</p>
             </div>
 
@@ -81,21 +80,21 @@
             <div class="bg-white rounded-2xl p-6 shadow-lg">
                 <div class="flex items-center justify-between mb-4">
                     <div class="bg-green-100 p-3 rounded-xl">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                     </div>
                 </div>
                 <h3 class="text-gray-600 text-sm font-medium">Total Transaksi</h3>
-                <p class="text-2xl font-bold text-gray-900 mt-1">{{ $totalTransactions ?? 0 }}</p>
+                <p class="text-2xl md:text-3xl font-bold text-gray-900 mt-1">{{ $totalTransactions ?? 0 }}</p>
                 <p class="text-gray-500 text-sm mt-2">Pesanan selesai</p>
             </div>
 
             <!-- Poin Reward -->
             <div class="bg-white rounded-2xl p-6 shadow-lg">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="bg-yellow-100 p-3 rounded-xl">
-                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="bg-purple-100 p-3 rounded-xl">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
                         </svg>
                     </div>
@@ -111,24 +110,24 @@
                 </div>
                 <h3 class="text-gray-600 text-sm font-medium">Poin Reward</h3>
                 @if(Auth::user()->member)
-                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ number_format(Auth::user()->member->total_points) }}</p>
+                    <p class="text-2xl md:text-3xl font-bold text-gray-900 mt-1">{{ number_format(Auth::user()->member->total_points) }}</p>
                     <p class="text-green-600 text-sm mt-2">Poin tersedia</p>
                 @else
-                    <p class="text-2xl font-bold text-gray-400 mt-1">0</p>
+                    <p class="text-2xl md:text-3xl font-bold text-gray-400 mt-1">0</p>
                     <p class="text-gray-500 text-sm mt-2">Daftar member untuk dapat poin</p>
                 @endif
             </div>
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
-            <h3 class="text-xl font-bold text-gray-900 mb-6">Quick Actions</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6 mb-6 md:mb-8">
+            <h3 class="text-xl font-bold text-gray-900 mb-4 md:mb-6">Quick Actions</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 max-w-4xl mx-auto">
                 <!-- Member Card -->
                 @if(Auth::user()->member)
                     <!-- Member Aktif -->
-                    <a href="{{ route('pelanggan.member.index') }}" class="bg-gradient-to-br from-yellow-500 to-orange-500 text-white rounded-xl p-6 hover:shadow-lg transition transform hover:-translate-y-1">
-                        <svg class="w-10 h-10 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
+                    <a href="{{ route('pelanggan.member.index') }}" class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-4 md:p-6 hover:shadow-lg transition transform hover:-translate-y-1">
+                        <svg class="w-8 h-8 md:w-10 md:h-10 mx-auto mb-2 md:mb-3" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                         </svg>
                         <p class="font-semibold text-sm">Member</p>
@@ -136,14 +135,14 @@
                     </a>
                 @else
                     <!-- Belum Member (Terkunci) -->
-                    <div class="bg-gradient-to-br from-gray-400 to-gray-500 text-white rounded-xl p-6 relative cursor-not-allowed opacity-75">
+                    <div class="bg-gradient-to-br from-gray-400 to-gray-500 text-white rounded-xl p-4 md:p-6 relative cursor-not-allowed opacity-75">
                         <!-- Lock Icon Overlay -->
                         <div class="absolute top-2 right-2">
-                            <svg class="w-6 h-6 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="w-5 h-5 md:w-6 md:h-6 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
                             </svg>
                         </div>
-                        <svg class="w-10 h-10 mx-auto mb-3 opacity-60" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-8 h-8 md:w-10 md:h-10 mx-auto mb-2 md:mb-3 opacity-60" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                         </svg>
                         <p class="font-semibold text-sm">Member</p>
@@ -151,20 +150,14 @@
                     </div>
                 @endif
 
-                <a href="{{ route('pelanggan.transactions.index') }}" class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-6 hover:shadow-lg transition transform hover:-translate-y-1">
-                    <svg class="w-10 h-10 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('pelanggan.transactions.index') }}" class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-4 md:p-6 hover:shadow-lg transition transform hover:-translate-y-1">
+                    <svg class="w-8 h-8 md:w-10 md:h-10 mx-auto mb-2 md:mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
                     <p class="font-semibold text-sm">Riwayat</p>
                 </a>
-                <button class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-6 hover:shadow-lg transition transform hover:-translate-y-1">
-                    <svg class="w-10 h-10 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    <p class="font-semibold text-sm">Profil</p>
-                </button>
-                <button class="bg-gradient-to-br from-red-500 to-red-600 text-white rounded-xl p-6 hover:shadow-lg transition transform hover:-translate-y-1">
-                    <svg class="w-10 h-10 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button class="bg-gradient-to-br from-red-500 to-red-600 text-white rounded-xl p-4 md:p-6 hover:shadow-lg transition transform hover:-translate-y-1">
+                    <svg class="w-8 h-8 md:w-10 md:h-10 mx-auto mb-2 md:mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                     <p class="font-semibold text-sm">Bantuan</p>
@@ -173,8 +166,8 @@
         </div>
 
         <!-- Riwayat Transaksi -->
-        <div class="bg-white rounded-2xl shadow-lg p-6">
-            <div class="flex items-center justify-between mb-6">
+        <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6">
+            <div class="flex items-center justify-between mb-4 md:mb-6">
                 <h3 class="text-xl font-bold text-gray-900">Riwayat Transaksi Terakhir</h3>
                 <a href="{{ route('pelanggan.transactions.index') }}" class="text-primary hover:text-red-600 font-semibold text-sm">Lihat Semua</a>
             </div>
@@ -221,26 +214,26 @@
         </div>
 
         <!-- Info Section -->
-        <div class="grid md:grid-cols-2 gap-6 mt-8">
-            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200">
+        <div class="grid md:grid-cols-2 gap-4 md:gap-6 mt-6 md:mt-8">
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-4 md:p-6 border border-blue-200">
                 <div class="flex items-start">
-                    <div class="bg-blue-500 p-3 rounded-xl text-white mr-4">
+                    <div class="bg-blue-500 p-3 rounded-xl text-white mr-4 flex-shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <div>
+                    <div class="flex-1 min-w-0">
                         <h4 class="font-bold text-gray-900 mb-2">Informasi Akun</h4>
-                        <p class="text-sm text-gray-700"><strong>Email:</strong> {{ Auth::user()->email }}</p>
-                        <p class="text-sm text-gray-700"><strong>Telepon:</strong> {{ Auth::user()->phone ?? '-' }}</p>
+                        <p class="text-sm text-gray-700 truncate"><strong>Email:</strong> {{ Auth::user()->email }}</p>
+                        <p class="text-sm text-gray-700 truncate"><strong>Telepon:</strong> {{ Auth::user()->phone ?? '-' }}</p>
                         <p class="text-sm text-gray-700"><strong>Alamat:</strong> {{ Auth::user()->address ?? 'Belum diisi' }}</p>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 border border-green-200">
+            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-4 md:p-6 border border-green-200">
                 <div class="flex items-start">
-                    <div class="bg-green-500 p-3 rounded-xl text-white mr-4">
+                    <div class="bg-green-500 p-3 rounded-xl text-white mr-4 flex-shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
                         </svg>

@@ -321,17 +321,19 @@
                             <label class="block text-sm font-bold text-purple-700 mb-2">
                                 <i class="fas fa-ticket-alt mr-1"></i> Gunakan Voucher Member (Opsional)
                             </label>
-                            <div class="flex gap-2">
-                                <input type="text" id="voucherCode" placeholder="Scan barcode atau ketik kode voucher"
-                                    class="flex-1 px-4 py-3 border-2 border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition text-base uppercase">
-                                <button type="button" onclick="openVoucherBarcodeScanner()"
-                                    class="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition font-semibold whitespace-nowrap">
-                                    <i class="fas fa-camera mr-1"></i> Scan
-                                </button>
-                                <button type="button" onclick="scanVoucher()"
-                                    class="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition font-semibold">
-                                    <i class="fas fa-search mr-1"></i> Cek
-                                </button>
+                            <div class="space-y-2">
+                                <input type="text" id="voucherCode" placeholder="SCAN BARCODE ATAU KETIK"
+                                    class="w-full px-4 py-3 border-2 border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition text-base uppercase">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button type="button" onclick="openVoucherBarcodeScanner()"
+                                        class="w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition font-semibold">
+                                        <i class="fas fa-camera mr-1"></i> Scan
+                                    </button>
+                                    <button type="button" onclick="scanVoucher()"
+                                        class="w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition font-semibold">
+                                        <i class="fas fa-search mr-1"></i> Cek
+                                    </button>
+                                </div>
                             </div>
                             
                             <!-- Voucher Info (Hidden by default) -->

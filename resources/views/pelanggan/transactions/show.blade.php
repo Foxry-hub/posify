@@ -13,7 +13,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold" href="{{ route('dashboard') }}">
-                <i class="fas fa-store"></i> POSIFY
+                POSIFY
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -22,12 +22,12 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('dashboard') }}">
-                            <i class="fas fa-home"></i> Dashboard
+                            Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" href="{{ route('pelanggan.transactions.index') }}">
-                            <i class="fas fa-history"></i> Riwayat Belanja
+                            Riwayat Belanja
                         </a>
                     </li>
                     <li class="nav-item dropdown">
